@@ -3,13 +3,15 @@ const Monitor = require('../lib/monitor');
 const spylogger = require('./spy-logger');
 
 describe('Monitor#monitor', function(){
+  var cfMonitor;
+
   beforeEach(function() {
-    Monitor.init(spylogger.logger);
+    cfMonitor = Monitor(spylogger.logger);
     spylogger.spy.reset();
   })
 
   it('should log', function() {
-    Monitor.monitor({StackId: 1}, spylogger.logger);
+    cfMonitor.monitor({StackId: 1}, spylogger.logger);
     assert.ok(spylogger.spy.calledOnce);
   });
 });
