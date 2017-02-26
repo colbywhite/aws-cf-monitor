@@ -7,7 +7,7 @@ describe('#create-stack', function(){
 
   before(function() {
     const mockAwsCreateStack = function(params, callback) {
-      callback(null, {success: true});
+      callback(null, {StackId: params.StackName});
     };
     createStack = createStackFactory({createStack: mockAwsCreateStack}, spylogger.logger);
   });
