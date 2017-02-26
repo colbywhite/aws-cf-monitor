@@ -1,13 +1,16 @@
 
 const AWS = require('aws-sdk');
-const Logger = require('js-logger');
+const winston = require('winston');
 const createStackFactory = require('./lib/create-stack');
+
+const LOG_NAME = 'cf-monitor';
 
 const CFSyncMonitor = function(){
   const cloudformation = new AWS.CloudFormation();
-  const logger = Logger.get('CFSyncMonitor');
+  const logger = winston.loggers.get(LOG_NAME);
   return {
-    createStack: createStackFactory(cloudformation, logger)
+    createStack: createStackFactory(cloudformation, logger),
+    LOG_NAME: LOG_NAME
   }
 }();
 
