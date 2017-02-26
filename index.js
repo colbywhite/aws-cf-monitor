@@ -11,7 +11,7 @@ const CFMonitor = function(){
   return {
     createStack: createStackFactory(cloudformation, logger),
     LOG_NAME: LOG_NAME
-  }
+  };
 }();
 
 module.exports = CFMonitor;

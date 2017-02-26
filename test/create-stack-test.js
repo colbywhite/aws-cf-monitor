@@ -1,33 +1,26 @@
 const assert = require('assert');
-const createStackFactory = require('../lib/create-stack')
+const createStackFactory = require('../lib/create-stack');
+const spylogger = require('./spy-logger');
 
 describe('#create-stack', function(){
-  var msgs = [];
   var createStack;
 
   before(function() {
-    const logger = {
-      debug: function(msg) {
-        msgs.push(msg);
-      },
-      info: function(msg) {
-        msgs.push(msg);
-      }
-    };
     const mockAwsCreateStack = function(params, callback) {
       callback(null, {success: true});
     };
-    createStack = createStackFactory({createStack: mockAwsCreateStack}, logger);
+    createStack = createStackFactory({createStack: mockAwsCreateStack}, spylogger.logger);
   });
 
   beforeEach(function() {
-    msgs.length = 0;
+    spylogger.spy.reset();
   })
 
   it('should log', function() {
     return createStack({StackName: 1})
       .then(function(){
-        assert.equal(3, msgs.length);
+        // 2 INFO statements
+        assert.equal(2, spylogger.spy.callCount);
       });
   })
 });

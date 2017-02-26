@@ -17,6 +17,8 @@
     "winston": "^2.3.1"
   },
   "devDependencies": {
-    "mocha": "^3.2.0"
+    "mocha": "^3.2.0",
+    "sinon": "^1.17.7",
+    "winston-spy": "^0.2.0"
   }
 }
