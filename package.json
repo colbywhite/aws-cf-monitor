@@ -1,5 +1,5 @@
 {
-  "name": "cf-sync-monitor",
+  "name": "cf-monitor",
   "version": "0.0.1",
   "description": "A wrapper around the AWS CloudFormation Node API that monitors the progress of the CF commands while providing smart logging",
   "main": "index.js",

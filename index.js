@@ -5,7 +5,7 @@ const createStackFactory = require('./lib/create-stack');
 
 const LOG_NAME = 'cf-monitor';
 
-const CFSyncMonitor = function(){
+const CFMonitor = function(){
   const cloudformation = new AWS.CloudFormation();
   const logger = winston.loggers.get(LOG_NAME);
   return {
@@ -14,4 +14,4 @@ const CFSyncMonitor = function(){
   }
 }();
 
-module.exports = CFSyncMonitor;
+module.exports = CFMonitor;
