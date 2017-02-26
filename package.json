@@ -1,7 +1,7 @@
 {
   "name": "cf-sync-monitor",
   "version": "0.0.1",
-  "description": "A synchronous wrapper around the AWS Node CloudFormation library that provides smart logging of events during actions",
+  "description": "A wrapper around the AWS CloudFormation Node API that monitors the progress of the CF commands while providing smart logging",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
