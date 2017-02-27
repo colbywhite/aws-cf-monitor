@@ -1,4 +1,5 @@
 const assert = require('assert');
+const CF = require('./mock-aws');
 const createStackFactory = require('../lib/create-stack');
 const spylogger = require('./spy-logger');
 
@@ -6,10 +7,7 @@ describe('#create-stack', function(){
   var createStack;
 
   before(function() {
-    const mockAwsCreateStack = function(params, callback) {
-      callback(null, {StackId: params.StackName});
-    };
-    createStack = createStackFactory({createStack: mockAwsCreateStack}, spylogger.logger);
+    createStack = createStackFactory(spylogger.logger);
   });
 
   beforeEach(function() {
@@ -19,8 +17,8 @@ describe('#create-stack', function(){
   it('should log', function() {
     return createStack({StackName: 1})
       .then(function(){
-        // 2 INFO statements
-        assert.equal(2, spylogger.spy.callCount);
+        // 1 INFO statement
+        assert.equal(1, spylogger.spy.callCount);
       });
   })
 });
