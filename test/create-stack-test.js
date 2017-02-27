@@ -15,10 +15,10 @@ describe('#create-stack', function(){
   })
 
   it('should log', function() {
-    return createStack({StackName: 1})
+    return createStack({StackName: '1'})
       .then(function(){
-        // 1 INFO statement
-        assert.equal(1, spylogger.spy.callCount);
+        // 1 INFO stmnt + 2 INFO stmnt per event
+        assert.equal(3, spylogger.spy.callCount);
       });
   })
 });

@@ -11,7 +11,10 @@ describe('Monitor#monitor', function(){
   })
 
   it('should log', function() {
-    cfMonitor.monitor({StackId: 1}, spylogger.logger);
-    assert.ok(spylogger.spy.calledOnce);
+    return cfMonitor.monitor({StackId: '1'})
+      .then(function() {
+        // 1 INFO stmnt + 2 INFO stmnt per event
+        assert.equal(3, spylogger.spy.callCount);
+      });
   });
 });
