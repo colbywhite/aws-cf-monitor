@@ -1,4 +1,3 @@
-const CF = require('./aws-promisify');
 const winston = require('winston');
 const createStackFactory = require('./lib/create-stack');
 
