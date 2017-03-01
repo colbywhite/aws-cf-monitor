@@ -31,7 +31,7 @@ describe('Monitor#monitorStack', function(){
             LogicalResourceId: STACK_NAME,
             ResourceType: 'AWS::CloudFormation::Stack',
             Timestamp: new Date(),
-            ResourceStatus: `${action}_IN_PROGRESS`,
+            ResourceStatus: `${action}_IN_PROGRESS`
           }
         ]
       };
@@ -43,7 +43,7 @@ describe('Monitor#monitorStack', function(){
             LogicalResourceId: STACK_NAME,
             ResourceType: 'AWS::CloudFormation::Stack',
             Timestamp: new Date(),
-            ResourceStatus: state,
+            ResourceStatus: state
           }
         ]
       };
