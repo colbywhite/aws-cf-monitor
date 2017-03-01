@@ -45,8 +45,8 @@ describe('Monitor#monitorStack', function(){
         assert.equal(2, describeStackEventsAsyncStub.callCount);
         assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));
         assert.equal('DELETE_COMPLETE', stackStatus);
-        // 1 INFO at the beginning, then 1 for each real event
-        assert.equal(spylogger.spy.callCount, 2);
+        // 1 INFO at the beginning and the end, then 1 for each real event
+        assert.equal(spylogger.spy.callCount, 3);
       });
   })
 
@@ -88,8 +88,8 @@ describe('Monitor#monitorStack', function(){
           assert.equal(2, describeStackEventsAsyncStub.callCount);
           assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));
           assert.equal(state, stackStatus);
-          // 1 INFO at the beginning, then 1 for each event
-          assert.equal(spylogger.spy.callCount, 3);
+          // 1 INFO at the beginning and the end, then 1 for each event
+          assert.equal(spylogger.spy.callCount, 4);
         });
     })
 
@@ -140,8 +140,8 @@ describe('Monitor#monitorStack', function(){
           assert.equal(3, describeStackEventsAsyncStub.callCount);
           assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));
           assert.equal(state, stackStatus);
-          // 1 INFO at the beginning, then 1 for each event
-          assert.equal(spylogger.spy.callCount, 4);
+          // 1 INFO at the beginning and the end, then 1 for each event
+          assert.equal(spylogger.spy.callCount, 5);
         });
     })
   });

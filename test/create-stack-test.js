@@ -35,7 +35,7 @@ describe('#create-stack', function(){
     return createStack({StackName: STACK_NAME})
       .then(function(){
         // 1 INFO stmnt + 1 INFO stmnt for the event
-        assert.equal(2, spylogger.spy.callCount);
+        assert.equal(3, spylogger.spy.callCount);
       });
   })
 });
