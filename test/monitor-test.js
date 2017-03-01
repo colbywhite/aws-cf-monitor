@@ -101,6 +101,71 @@ describe('Monitor#monitorStack', function(){
       });
   })
 
+  it('should throw an error and exit immediately if stack status *_FAILED', function() {
+    const startEvent = {
+      StackEvents: [
+        {
+          EventId: '1a2b3c4d',
+          LogicalResourceId: STACK_NAME,
+          ResourceType: 'AWS::CloudFormation::Stack',
+          Timestamp: new Date(),
+          ResourceStatus: 'UPDATE_IN_PROGRESS'
+        },
+      ],
+    };
+    const bucketFailedEvent = {
+      StackEvents: [
+        {
+          EventId: '1e2f3g4h',
+          LogicalResourceId: 'mochaS3',
+          ResourceType: 'S3::Bucket',
+          Timestamp: new Date(),
+          ResourceStatus: 'CREATE_FAILED',
+          ResourceStatusReason: 'Bucket already exists'
+        },
+      ],
+    };
+    const rollbackEvent = {
+      StackEvents: [
+        {
+          EventId: '1i2j3k4l',
+          LogicalResourceId: STACK_NAME,
+          ResourceType: 'AWS::CloudFormation::Stack',
+          Timestamp: new Date(),
+          ResourceStatus: 'UPDATE_ROLLBACK_IN_PROGRESS'
+        },
+      ],
+    };
+    const rollbackFailedEvent = {
+      StackEvents: [
+        {
+          EventId: '1m2n3o4p',
+          LogicalResourceId: STACK_NAME,
+          ResourceType: 'AWS::CloudFormation::Stack',
+          Timestamp: new Date(),
+          ResourceStatus: 'UPDATE_ROLLBACK_FAILED'
+        },
+      ],
+    };
+
+    describeStackEventsAsyncStub.onCall(0).returns(Promise.resolve(startEvent));
+    describeStackEventsAsyncStub.onCall(1).returns(Promise.resolve(bucketFailedEvent));
+    describeStackEventsAsyncStub.onCall(2).returns(Promise.resolve(rollbackEvent));
+    describeStackEventsAsyncStub.onCall(3).returns(Promise.resolve(rollbackFailedEvent));
+
+    return testMonitor.monitor({StackId: STACK_NAME})
+      .then(function(){
+        assert.ok(false, 'no error was thrown when stack status is *_FAILED');
+      })
+      .catch(function(err) {
+        assert.ok(err);
+        assert.equal(2, describeStackEventsAsyncStub.callCount);
+        assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));
+        // 1 INFO at the beginning then 1 for each event until the failure
+        // the 1 ERROR for the final failure
+        assert.equal(spylogger.spy.callCount, 4);
+      });
+  })
 
   statuses.forEach(function(state){
     const action = state.split('_')[0];
