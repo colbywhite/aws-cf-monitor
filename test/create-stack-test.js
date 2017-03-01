@@ -9,7 +9,7 @@ describe('#create-stack', function(){
   var createStack;
 
   beforeEach(function() {
-    createStack = createStackFactory(spylogger.logger);
+    createStack = createStackFactory(spylogger.logger, 1);
     describeStackEventsAsyncStub = sinon.stub(CF, 'describeStackEventsAsync');
     spylogger.spy.reset();
   })

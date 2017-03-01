@@ -12,7 +12,7 @@ describe('Monitor#monitorStack', function(){
 
   beforeEach(function() {
     spylogger.spy.reset();
-    testMonitor = Monitor(spylogger.logger);
+    testMonitor = Monitor(spylogger.logger, 1);
     describeStackEventsAsyncStub = sinon.stub(CF, 'describeStackEventsAsync');
   })
 
