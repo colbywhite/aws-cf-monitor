@@ -20,6 +20,37 @@ describe('Monitor#monitorStack', function(){
     describeStackEventsAsyncStub.restore();
   })
 
+  it('should keep monitoring until stack not found error', () => {
+    const deleteStartEvent = {
+      StackEvents: [
+        {
+          EventId: '1a2b3c4d',
+          StackName: STACK_NAME,
+          LogicalResourceId: STACK_NAME,
+          ResourceType: 'AWS::CloudFormation::Stack',
+          Timestamp: new Date(),
+          ResourceStatus: 'DELETE_IN_PROGRESS',
+        },
+      ],
+    };
+    const stackNotFoundError = {
+      message: 'Stack new-service-dev does not exist',
+    };
+
+    describeStackEventsAsyncStub.onCall(0).returns(Promise.resolve(deleteStartEvent));
+    describeStackEventsAsyncStub.onCall(1).returns(Promise.resolve(stackNotFoundError));
+
+    return testMonitor.monitor({StackId: STACK_NAME})
+      .then(function(stackStatus) {
+        assert.equal(2, describeStackEventsAsyncStub.callCount);
+        assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));
+        assert.equal('DELETE_COMPLETE', stackStatus);
+        // 1 INFO at the beginning, then 1 for each real event
+        assert.equal(spylogger.spy.callCount, 2);
+      });
+  })
+
+
   statuses.forEach(function(state){
     const action = state.split('_')[0];
 
