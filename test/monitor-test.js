@@ -56,6 +56,8 @@ describe('Monitor#monitorStack', function(){
           assert.equal(2, describeStackEventsAsyncStub.callCount);
           assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));
           assert.equal(state, stackStatus);
+          // 1 INFO at the beginning, then 1 for each event
+          assert.equal(spylogger.spy.callCount, 3);
         });
     })
   });
