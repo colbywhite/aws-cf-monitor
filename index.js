@@ -1,13 +1,11 @@
 const winston = require('winston');
 const createStackFactory = require('./lib/create-stack');
-
-const LOG_NAME = 'cf-monitor';
+const constants = require('./lib/constants');
 
 const CFMonitor = function(){
-  const logger = winston.loggers.get(LOG_NAME);
   return {
-    createStack: createStackFactory(logger),
-    LOG_NAME: LOG_NAME
+    createStack: createStackFactory(),
+    LOG_NAME: constants.LOG_NAME
   };
 }();
 
