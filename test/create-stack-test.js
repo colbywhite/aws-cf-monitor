@@ -49,9 +49,9 @@ describe('#createStack', function(){
     describeStackEventsAsyncStub.onCall(1).returns(Promise.resolve(completedEvent));
     return createStack({StackName: STACK_NAME})
       .then(function(finalStatus){
-        assert.equal('CREATE_COMPLETE', finalStatus);
+        assert.equal(finalStatus, 'CREATE_COMPLETE');
         // 1 INFO at the beginning and the end, then 1 for each event
-        assert.equal(4, spylogger.callCount);
+        assert.equal(spylogger.callCount, 4);
       });
   })
 });

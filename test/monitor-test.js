@@ -45,9 +45,9 @@ describe('#monitor', function(){
 
     return monitor({StackId: STACK_NAME})
       .then(function(stackStatus) {
-        assert.equal(2, describeStackEventsAsyncStub.callCount);
+        assert.equal(describeStackEventsAsyncStub.callCount, 2);
         assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));
-        assert.equal('DELETE_COMPLETE', stackStatus);
+        assert.equal(stackStatus, 'DELETE_COMPLETE');
         // 1 INFO at the beginning and the end, then 1 for each real event
         assert.equal(spylogger.callCount, 3);
       });
@@ -96,9 +96,9 @@ describe('#monitor', function(){
 
     return monitor({StackId: STACK_NAME})
       .then(function(stackStatus) {
-        assert.equal(3, describeStackEventsAsyncStub.callCount);
+        assert.equal(describeStackEventsAsyncStub.callCount, 3);
         assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));
-        assert.equal('UPDATE_COMPLETE', stackStatus);
+        assert.equal(stackStatus, 'UPDATE_COMPLETE');
         // 1 INFO at the beginning and the end, then 1 for each real event
         assert.equal(spylogger.callCount, 5);
       });
@@ -162,7 +162,7 @@ describe('#monitor', function(){
       })
       .catch(function(err) {
         assert.ok(err);
-        assert.equal(2, describeStackEventsAsyncStub.callCount);
+        assert.equal(describeStackEventsAsyncStub.callCount, 2);
         assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));
         // 1 INFO at the beginning then 1 for each event until the failure
         // the 1 ERROR for the final failure
@@ -204,9 +204,9 @@ describe('#monitor', function(){
 
       return monitor({StackId: STACK_NAME})
         .then(function(stackStatus) {
-          assert.equal(2, describeStackEventsAsyncStub.callCount);
+          assert.equal(describeStackEventsAsyncStub.callCount, 2);
           assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));
-          assert.equal(state, stackStatus);
+          assert.equal(stackStatus, state);
           // 1 INFO at the beginning and the end, then 1 for each event
           assert.equal(spylogger.callCount, 4);
         });
@@ -256,9 +256,9 @@ describe('#monitor', function(){
 
       return monitor({StackId: STACK_NAME})
         .then(function(stackStatus) {
-          assert.equal(3, describeStackEventsAsyncStub.callCount);
+          assert.equal(describeStackEventsAsyncStub.callCount, 3);
           assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));
-          assert.equal(state, stackStatus);
+          assert.equal(stackStatus, state);
           // 1 INFO at the beginning and the end, then 1 for each event
           assert.equal(spylogger.callCount, 5);
         });
