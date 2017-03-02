@@ -4,7 +4,7 @@ const sinon = require('sinon');
 const monitor = require('../lib/monitor');
 const spylogger = require('./spy-logger');
 
-describe('Monitor#monitorStack', function(){
+describe('#monitor', function(){
   const STACK_NAME = 'mock-stack'
   var testMonitor;
   var describeStackEventsAsyncStub;

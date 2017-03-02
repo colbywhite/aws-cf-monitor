@@ -4,7 +4,7 @@ const sinon = require('sinon');
 const createStack = require('../lib/create-stack');
 const spylogger = require('./spy-logger');
 
-describe('#create-stack', function(){
+describe('#createStack', function(){
   const STACK_NAME = 'mock-stack'
 
   before(function() {
