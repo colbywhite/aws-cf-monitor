@@ -1,7 +1,7 @@
 const assert = require('assert');
 const CF = require('./mock-aws');
 const sinon = require('sinon');
-const Monitor = require('../lib/monitor');
+const monitor = require('../lib/monitor');
 const spylogger = require('./spy-logger');
 
 describe('Monitor#monitorStack', function(){
@@ -10,9 +10,12 @@ describe('Monitor#monitorStack', function(){
   var describeStackEventsAsyncStub;
   const statuses = ['CREATE_COMPLETE', 'UPDATE_COMPLETE', 'DELETE_COMPLETE'];
 
+  before(function() {
+    process.env.CF_MONITOR_DELAY = '1'
+  })
+
   beforeEach(function() {
     spylogger.reset();
-    testMonitor = Monitor(1);
     describeStackEventsAsyncStub = sinon.stub(CF, 'describeStackEventsAsync');
   })
 
@@ -40,7 +43,7 @@ describe('Monitor#monitorStack', function(){
     describeStackEventsAsyncStub.onCall(0).returns(Promise.resolve(deleteStartEvent));
     describeStackEventsAsyncStub.onCall(1).returns(Promise.resolve(stackNotFoundError));
 
-    return testMonitor.monitor({StackId: STACK_NAME})
+    return monitor({StackId: STACK_NAME})
       .then(function(stackStatus) {
         assert.equal(2, describeStackEventsAsyncStub.callCount);
         assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));
@@ -91,7 +94,7 @@ describe('Monitor#monitorStack', function(){
     describeStackEventsAsyncStub.onCall(1).returns(Promise.resolve(progressEvent));
     describeStackEventsAsyncStub.onCall(2).returns(Promise.resolve(completedEvent));
 
-    return testMonitor.monitor({StackId: STACK_NAME})
+    return monitor({StackId: STACK_NAME})
       .then(function(stackStatus) {
         assert.equal(3, describeStackEventsAsyncStub.callCount);
         assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));
@@ -153,7 +156,7 @@ describe('Monitor#monitorStack', function(){
     describeStackEventsAsyncStub.onCall(2).returns(Promise.resolve(rollbackEvent));
     describeStackEventsAsyncStub.onCall(3).returns(Promise.resolve(rollbackFailedEvent));
 
-    return testMonitor.monitor({StackId: STACK_NAME})
+    return monitor({StackId: STACK_NAME})
       .then(function(){
         assert.ok(false, 'no error was thrown when stack status is *_FAILED');
       })
@@ -199,7 +202,7 @@ describe('Monitor#monitorStack', function(){
       describeStackEventsAsyncStub.onCall(0).returns(Promise.resolve(inProgressEvent));
       describeStackEventsAsyncStub.onCall(1).returns(Promise.resolve(completedEvent));
 
-      return testMonitor.monitor({StackId: STACK_NAME})
+      return monitor({StackId: STACK_NAME})
         .then(function(stackStatus) {
           assert.equal(2, describeStackEventsAsyncStub.callCount);
           assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));
@@ -251,7 +254,7 @@ describe('Monitor#monitorStack', function(){
       describeStackEventsAsyncStub.onCall(1).returns(Promise.resolve(nestedStackEvent));
       describeStackEventsAsyncStub.onCall(2).returns(Promise.resolve(completedEvent));
 
-      return testMonitor.monitor({StackId: STACK_NAME})
+      return monitor({StackId: STACK_NAME})
         .then(function(stackStatus) {
           assert.equal(3, describeStackEventsAsyncStub.callCount);
           assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));

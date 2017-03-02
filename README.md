@@ -20,6 +20,11 @@ CFMonitor.createStack(params)
   });
 ```
 
+## Delay Interval
+As the `CFMonitor` waits for your stack to complete, it will poll for the status.
+The interval in between polls can be controlled via the `CF_MONITOR_DELAY` environment variable.
+The default is _5000 milliseconds_.
+
 ## Configure logger
 You can configure the logger by whichever means you prefer to configure a `winston` logger.
 The name of the logger is `cf-monitor`, which is a constant saved in `CFMonitor.LOG_NAME`.

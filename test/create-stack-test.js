@@ -1,15 +1,17 @@
 const assert = require('assert');
 const CF = require('./mock-aws');
 const sinon = require('sinon');
-const createStackFactory = require('../lib/create-stack');
+const createStack = require('../lib/create-stack');
 const spylogger = require('./spy-logger');
 
 describe('#create-stack', function(){
   const STACK_NAME = 'mock-stack'
-  var createStack;
+
+  before(function() {
+    process.env.CF_MONITOR_DELAY = '1'
+  })
 
   beforeEach(function() {
-    createStack = createStackFactory(1);
     describeStackEventsAsyncStub = sinon.stub(CF, 'describeStackEventsAsync');
     spylogger.reset();
   })
