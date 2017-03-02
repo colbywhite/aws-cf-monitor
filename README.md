@@ -1,4 +1,5 @@
 # cf-monitor
+[![Build Status](https://travis-ci.org/colbywhite/cf-monitor.svg?branch=master)](https://travis-ci.org/colbywhite/cf-monitor)
 A wrapper around the AWS CloudFormation Node API that monitors the progress of the CF commands while providing smart logging.
 
 The AWS API handles CloudFormation commands asynchronously, meaning you make a request to create a stack and you then write a bunch of boilerplate code to poll and wait for the creation to finish.
