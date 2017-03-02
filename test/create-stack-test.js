@@ -20,7 +20,19 @@ describe('#createStack', function(){
     describeStackEventsAsyncStub.restore();
   })
 
-  it('should log', function() {
+  it('should wait for completion and log events', function() {
+    const inProgressEvent = {
+      StackEvents: [
+        {
+          EventId: '1a2b3c4d',
+          StackName: STACK_NAME,
+          LogicalResourceId: STACK_NAME,
+          ResourceType: 'AWS::CloudFormation::Stack',
+          Timestamp: new Date(),
+          ResourceStatus: 'CREATE_IN_PROGRESS'
+        }
+      ]
+    };
     const completedEvent = {
       StackEvents: [
         {
@@ -33,11 +45,13 @@ describe('#createStack', function(){
         }
       ]
     };
-    describeStackEventsAsyncStub.onCall(0).returns(Promise.resolve(completedEvent));
+    describeStackEventsAsyncStub.onCall(0).returns(Promise.resolve(inProgressEvent));
+    describeStackEventsAsyncStub.onCall(1).returns(Promise.resolve(completedEvent));
     return createStack({StackName: STACK_NAME})
-      .then(function(){
-        // 1 INFO stmnt + 1 INFO stmnt for the event
-        assert.equal(3, spylogger.callCount);
+      .then(function(finalStatus){
+        assert.equal('CREATE_COMPLETE', finalStatus);
+        // 1 INFO at the beginning and the end, then 1 for each event
+        assert.equal(4, spylogger.callCount);
       });
   })
 });
