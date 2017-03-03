@@ -1,5 +1,5 @@
-# cf-monitor
-[![Build Status](https://travis-ci.org/colbywhite/cf-monitor.svg?branch=master)](https://travis-ci.org/colbywhite/cf-monitor)
+# aws-cf-monitor
+[![Build Status](https://travis-ci.org/colbywhite/aws-cf-monitor.svg?branch=master)](https://travis-ci.org/colbywhite/aws-cf-monitor)
 
 A wrapper around the AWS CloudFormation Node API that monitors the progress of the CF commands while providing smart logging.
 
@@ -10,13 +10,13 @@ This aims to replace that boilerplate code with some pretty `winston` logging so
 # Usage
 
 ```
-const CFMonitor = require('cf-monitor');
+const AWSCFMonitor = require('aws-cf-monitor');
 
 // use the same params that the AWS.CloudFormation object normally takes
 const params = {}
 
 # updateStack and deleteStack are also supported
-CFMonitor.createStack(params)
+AWSCFMonitor.createStack(params)
   .then(function(finalStatus) {
     console.log(`Hooray, the stack is ${finalStatus}`);
     console.log('And I didn\'t have to write a bunch of boilerplate to wait for it!');
@@ -25,12 +25,12 @@ CFMonitor.createStack(params)
 
 ## Delay Interval
 As the `CFMonitor` waits for your stack to complete, it will poll for the status.
-The interval in between polls can be controlled via the `CF_MONITOR_DELAY` environment variable.
+The interval in between polls can be controlled via the `AWS_CF_MONITOR_DELAY` environment variable.
 The default is _5000 milliseconds_.
 
 ## Configure logger
 You can configure the logger by whichever means you prefer to configure a `winston` logger.
-The name of the logger is `cf-monitor`, which is a constant saved in `CFMonitor.LOG_NAME`.
+The name of the logger is `aws-cf-monitor`, which is a constant saved in `AWSCFMonitor.LOG_NAME`.
 If no logger is configured, a logger with the default `winston` configuration is used.
 
 See the [winston](https://github.com/winstonjs/winston) project for more information.
@@ -38,15 +38,15 @@ See the [winston](https://github.com/winstonjs/winston) project for more informa
 ```
 // One example for configuring the logger
 const winston = require('winston');
-const CFMonitor = require('cf-monitor');
+const AWSCFMonitor = require('aws-cf-monitor');
 
-winston.loggers.add(CFMonitor.LOG_NAME, {
+winston.loggers.add(AWSCFMonitor.LOG_NAME, {
   file: {
     level: 'info',
     filename: 'cf.log'
   }
 });
-var logger = winston.loggers.get(CFMonitor.LOG_NAME);
+var logger = winston.loggers.get(AWSCFMonitor.LOG_NAME);
 logger.remove(winston.transports.Console);
 ```
 

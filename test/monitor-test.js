@@ -11,7 +11,7 @@ describe('#monitor', function(){
   const statuses = ['CREATE_COMPLETE', 'UPDATE_COMPLETE', 'DELETE_COMPLETE'];
 
   before(function() {
-    process.env.CF_MONITOR_DELAY = '1'
+    process.env.AWS_CF_MONITOR_DELAY = '1'
   })
 
   beforeEach(function() {

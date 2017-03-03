@@ -7,7 +7,7 @@ const STACK_NAME = 'mock-stack'
 
 describe('cf-funcs', function() {
   before(function() {
-    process.env.CF_MONITOR_DELAY = '1'
+    process.env.AWS_CF_MONITOR_DELAY = '1'
   })
 
   beforeEach(function() {
