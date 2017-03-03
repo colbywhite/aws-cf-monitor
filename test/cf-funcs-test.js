@@ -53,6 +53,7 @@ describe('cf-funcs', function() {
           .then(function(finalStatus){
             assert.equal(finalStatus, `${action}_COMPLETE`);
             assert.equal(describeStackEventsAsyncStub.callCount, 2);
+            assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));
             assert.equal(CF[`${func}Async`].callCount, 1);
             assert.ok(CF[`${func}Async`].calledWithExactly({StackName: STACK_NAME}));
             // 1 INFO at the beginning and the end, then 1 for each event
