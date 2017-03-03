@@ -1,5 +1,8 @@
 # aws-cf-monitor
 [![Build Status](https://travis-ci.org/colbywhite/aws-cf-monitor.svg?branch=master)](https://travis-ci.org/colbywhite/aws-cf-monitor)
+[![npm](https://img.shields.io/npm/v/aws-cf-monitor.svg)](https://www.npmjs.com/package/aws-cf-monitor)
+[![npm](https://img.shields.io/npm/dt/aws-cf-monitor.svg)](https://www.npmjs.com/package/aws-cf-monitor)
+[![npm](https://img.shields.io/npm/l/aws-cf-monitor.svg)](https://www.npmjs.com/package/aws-cf-monitor)
 
 A wrapper around the AWS CloudFormation Node API that monitors the progress of the CF commands while providing smart logging.
 
@@ -58,4 +61,4 @@ logger.remove(winston.transports.Console);
 The way the `[serverless framework](https://github.com/serverless/serverless)` handles these CloudFormation requests is the inspiration.
 The framework handles polling well and prints some pretty color-coded logging as well, making it easy to follow the progress of the stack.
 
-The bulk of that original logic is in the[monitorStack.js](https://github.com/serverless/serverless/blob/c13b81a9f2a2f3ed05f0775cda2275338cc0ccbd/lib/plugins/aws/lib/monitorStack.js).
+The bulk of that original logic is in the [monitorStack.js](https://github.com/serverless/serverless/blob/c13b81a9f2a2f3ed05f0775cda2275338cc0ccbd/lib/plugins/aws/lib/monitorStack.js).
