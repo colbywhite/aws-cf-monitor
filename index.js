@@ -1,7 +1,4 @@
-const createStack = require('./lib/create-stack');
+const funcs = require('./lib/cf-funcs');
 const constants = require('./lib/constants');
 
-module.exports = {
-  createStack: createStack,
-  LOG_NAME: constants.LOG_NAME
-};
+module.exports = Object.assign(funcs, constants);
