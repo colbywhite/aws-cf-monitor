@@ -57,7 +57,7 @@ logger.remove(winston.transports.Console);
 
 `npm test`
 
-#Inspiration
+# Inspiration
 The way the `[serverless framework](https://github.com/serverless/serverless)` handles these CloudFormation requests is the inspiration.
 The framework handles polling well and prints some pretty color-coded logging as well, making it easy to follow the progress of the stack.
 
