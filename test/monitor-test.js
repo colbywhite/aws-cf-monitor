@@ -43,7 +43,7 @@ describe('#monitor', function(){
     describeStackEventsAsyncStub.onCall(0).returns(Promise.resolve(deleteStartEvent));
     describeStackEventsAsyncStub.onCall(1).returns(Promise.resolve(stackNotFoundError));
 
-    return monitor({StackId: STACK_NAME})
+    return monitor({StackId: STACK_NAME}, CF)
       .then(function(stackStatus) {
         assert.equal(describeStackEventsAsyncStub.callCount, 2);
         assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));

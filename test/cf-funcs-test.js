@@ -49,7 +49,7 @@ describe('cf-funcs', function() {
         };
         describeStackEventsAsyncStub.onCall(0).returns(Promise.resolve(inProgressEvent));
         describeStackEventsAsyncStub.onCall(1).returns(Promise.resolve(completedEvent));
-        return funcs[func]({StackName: STACK_NAME})
+        return funcs[func]({StackName: STACK_NAME}, CF)
           .then(function(finalStatus){
             assert.equal(finalStatus, `${action}_COMPLETE`);
             assert.equal(describeStackEventsAsyncStub.callCount, 2);
