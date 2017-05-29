@@ -1,18 +1,20 @@
-var CF = require('../lib/aws-promisify');
 const sinon = require('sinon');
+const getCloudFormation = require('../lib/aws-promisify');
+
+var mockCloudFormation = getCloudFormation();
 
 ['createStackAsync', 'updateStackAsync'].forEach(function(func){
-  sinon.stub(CF, func, function(params) {
+  sinon.stub(mockCloudFormation, func, function(params) {
     return new Promise(function(resolve, reject) {
       resolve({StackId: params.StackName});
     });
   });
 });
 
-sinon.stub(CF, 'deleteStackAsync', function(params) {
+sinon.stub(mockCloudFormation, 'deleteStackAsync', function(params) {
   return new Promise(function(resolve, reject) {
     resolve({});
   });
 });
 
-module.exports = CF;
+module.exports = mockCloudFormation;
