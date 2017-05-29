@@ -1,9 +1,10 @@
 const assert = require('assert');
-const CF = require('./mock-aws');
 const sinon = require('sinon');
 const funcs = require('../lib/cf-funcs');
 const spylogger = require('./spy-logger');
 const STACK_NAME = 'mock-stack'
+
+var cloudFormation = require('./mock-aws');
 
 describe('cf-funcs', function() {
   before(function() {
@@ -11,7 +12,7 @@ describe('cf-funcs', function() {
   })
 
   beforeEach(function() {
-    describeStackEventsAsyncStub = sinon.stub(CF, 'describeStackEventsAsync');
+    describeStackEventsAsyncStub = sinon.stub(cloudFormation, 'describeStackEventsAsync');
     spylogger.reset();
   })
 
@@ -49,13 +50,13 @@ describe('cf-funcs', function() {
         };
         describeStackEventsAsyncStub.onCall(0).returns(Promise.resolve(inProgressEvent));
         describeStackEventsAsyncStub.onCall(1).returns(Promise.resolve(completedEvent));
-        return funcs[func]({StackName: STACK_NAME})
+        return funcs[func]({StackName: STACK_NAME}, cloudFormation)
           .then(function(finalStatus){
             assert.equal(finalStatus, `${action}_COMPLETE`);
             assert.equal(describeStackEventsAsyncStub.callCount, 2);
             assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));
-            assert.equal(CF[`${func}Async`].callCount, 1);
-            assert.ok(CF[`${func}Async`].calledWithExactly({StackName: STACK_NAME}));
+            assert.equal(cloudFormation[`${func}Async`].callCount, 1);
+            assert.ok(cloudFormation[`${func}Async`].calledWithExactly({StackName: STACK_NAME}));
             // 1 INFO at the beginning and the end, then 1 for each event
             assert.equal(spylogger.callCount, 4);
           });

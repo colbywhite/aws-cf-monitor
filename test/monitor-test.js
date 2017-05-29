@@ -1,8 +1,9 @@
 const assert = require('assert');
-const CF = require('./mock-aws');
 const sinon = require('sinon');
 const monitor = require('../lib/monitor');
 const spylogger = require('./spy-logger');
+
+var cloudFormation = require('./mock-aws');
 
 describe('#monitor', function(){
   const STACK_NAME = 'mock-stack'
@@ -16,7 +17,7 @@ describe('#monitor', function(){
 
   beforeEach(function() {
     spylogger.reset();
-    describeStackEventsAsyncStub = sinon.stub(CF, 'describeStackEventsAsync');
+    describeStackEventsAsyncStub = sinon.stub(cloudFormation, 'describeStackEventsAsync');
   })
 
   afterEach(function() {
@@ -43,7 +44,7 @@ describe('#monitor', function(){
     describeStackEventsAsyncStub.onCall(0).returns(Promise.resolve(deleteStartEvent));
     describeStackEventsAsyncStub.onCall(1).returns(Promise.resolve(stackNotFoundError));
 
-    return monitor({StackId: STACK_NAME})
+    return monitor({StackId: STACK_NAME}, cloudFormation)
       .then(function(stackStatus) {
         assert.equal(describeStackEventsAsyncStub.callCount, 2);
         assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));
@@ -94,8 +95,9 @@ describe('#monitor', function(){
     describeStackEventsAsyncStub.onCall(1).returns(Promise.resolve(progressEvent));
     describeStackEventsAsyncStub.onCall(2).returns(Promise.resolve(completedEvent));
 
-    return monitor({StackId: STACK_NAME})
+    return monitor({StackId: STACK_NAME}, cloudFormation)
       .then(function(stackStatus) {
+        assert.equal(stackStatus, 'UPDATE_COMPLETE');
         assert.equal(describeStackEventsAsyncStub.callCount, 3);
         assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));
         assert.equal(stackStatus, 'UPDATE_COMPLETE');
@@ -156,7 +158,7 @@ describe('#monitor', function(){
     describeStackEventsAsyncStub.onCall(2).returns(Promise.resolve(rollbackEvent));
     describeStackEventsAsyncStub.onCall(3).returns(Promise.resolve(rollbackFailedEvent));
 
-    return monitor({StackId: STACK_NAME})
+    return monitor({StackId: STACK_NAME}, cloudFormation)
       .then(function(){
         assert.ok(false, 'no error was thrown when stack status is *_FAILED');
       })
@@ -202,7 +204,7 @@ describe('#monitor', function(){
       describeStackEventsAsyncStub.onCall(0).returns(Promise.resolve(inProgressEvent));
       describeStackEventsAsyncStub.onCall(1).returns(Promise.resolve(completedEvent));
 
-      return monitor({StackId: STACK_NAME})
+      return monitor({StackId: STACK_NAME}, cloudFormation)
         .then(function(stackStatus) {
           assert.equal(describeStackEventsAsyncStub.callCount, 2);
           assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));
@@ -254,7 +256,7 @@ describe('#monitor', function(){
       describeStackEventsAsyncStub.onCall(1).returns(Promise.resolve(nestedStackEvent));
       describeStackEventsAsyncStub.onCall(2).returns(Promise.resolve(completedEvent));
 
-      return monitor({StackId: STACK_NAME})
+      return monitor({StackId: STACK_NAME}, cloudFormation)
         .then(function(stackStatus) {
           assert.equal(describeStackEventsAsyncStub.callCount, 3);
           assert.ok(describeStackEventsAsyncStub.calledWithExactly({StackName: STACK_NAME}));
