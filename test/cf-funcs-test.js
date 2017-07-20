@@ -5,11 +5,23 @@ const spylogger = require('./spy-logger');
 const STACK_NAME = 'mock-stack'
 
 var cloudFormation = require('./mock-aws');
+
+function prepStackExistsException() {
+  cloudFormation.createStackAsync.restore();
+  sinon.stub(cloudFormation, 'createStackAsync', (params) => {
+    return new Promise((resolve, reject) => {
+      reject({cause:{code: 'AlreadyExistsException'}})
+    })
+  });
+}
+
+// TODO refactor this since order of the runs currently matters due to the createStackAsync.restore call
 const happyPathRuns = [
   {func: funcs.createStack, action: 'CREATE', cfFuncName: 'createStackAsync'},
   {func: funcs.updateStack, action: 'UPDATE', cfFuncName: 'updateStackAsync'},
   {func: funcs.deleteStack, action: 'DELETE', cfFuncName: 'deleteStackAsync'},
-  {func: funcs.createOrUpdateStack, action: 'CREATE', cfFuncName: 'createStackAsync', descAddendum: 'when create is successful'}
+  {func: funcs.createOrUpdateStack, action: 'CREATE', cfFuncName: 'createStackAsync', descAddendum: 'when create is successful'},
+  {func: funcs.createOrUpdateStack, action: 'UPDATE', cfFuncName: 'updateStackAsync', descAddendum: 'when stack already exists', before: prepStackExistsException}
 ]
 
 describe('cf-funcs', function() {
@@ -31,7 +43,11 @@ describe('cf-funcs', function() {
 
   happyPathRuns.forEach(function(run){
     describe(`#${run.func.name}`, function(){
-      it(`should wait for completion and log events ${run.descAddendum || ''}`, function() {
+      if(run.before) {
+        beforeEach(run.before)
+      }
+
+      it(`should wait for completion of ${run.cfFuncName} and log events ${run.descAddendum || ''}`, function() {
         const inProgressEvent = {
           StackEvents: [
             {
@@ -71,5 +87,23 @@ describe('cf-funcs', function() {
       });
     });
   });
+
+  describe('#createOrUpdateStack', () => {
+    it('should reject when creating the stack fails for unknown reason', () => {
+      cloudFormation.createStackAsync.restore();
+      sinon.stub(cloudFormation, 'createStackAsync', (params) => {
+        return new Promise((resolve, reject) => {
+          reject({cause:{code: 'BLAH'}})
+        })
+      });
+      funcs.createOrUpdateStack({StackName: STACK_NAME}, cloudFormation)
+        .then(
+          (result) => {
+            throw new Error('createOrUpdateStack should not resolve')
+          },
+          (err) => assert.equal(err.cause.code, 'BLAH')
+        )
+    })
+  })
 
 });

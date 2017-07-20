@@ -18,7 +18,7 @@ const AWSCFMonitor = require('aws-cf-monitor');
 // use the same params that the AWS.CloudFormation object normally takes
 const params = {}
 
-# updateStack and deleteStack are also supported
+# createOrUpdateStack, updateStack and deleteStack are also supported
 AWSCFMonitor.createStack(params)
   .then(function(finalStatus) {
     console.log(`Hooray, the stack is ${finalStatus}`);
