@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk';
 import * as AWSMock from 'aws-sdk-mock';
-import { DescribeStackEventsInput } from "aws-sdk/clients/cloudformation";
+import { DescribeStackEventsInput } from 'aws-sdk/clients/cloudformation';
 import { Monitor } from './monitor';
 
 describe('Monitor', () => {

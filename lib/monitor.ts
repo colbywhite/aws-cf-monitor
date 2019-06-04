@@ -1,13 +1,13 @@
-import winston from 'winston';
-import chalk from 'chalk';
-import {LOG_NAME} from './constants';
+import AWS from 'aws-sdk';
 import CloudFormation, {
     DescribeStackEventsInput,
     DescribeStackEventsOutput,
     ResourceStatus,
     StackEvent
 } from 'aws-sdk/clients/cloudformation';
-import AWS from 'aws-sdk';
+import chalk from 'chalk';
+import winston from 'winston';
+import { LOG_NAME } from './constants';
 
 const COMPLETE_STATUSES = [
     'CREATE_COMPLETE',

@@ -4,5 +4,13 @@
     "*.spec.ts"
   ],
   "stopSpecOnExpectationFailure": false,
-  "random": false
+  "reporters": [
+    {
+      "name": "jasmine-spec-reporter#SpecReporter",
+      "options": {
+        "displayStacktrace": "all"
+      }
+    }
+  ],
+  "random": true
 }
