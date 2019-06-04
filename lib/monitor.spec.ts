@@ -1,11 +1,20 @@
 import AWS from 'aws-sdk';
 import * as AWSMock from 'aws-sdk-mock';
 import { DescribeStackEventsInput } from 'aws-sdk/clients/cloudformation';
+import * as winston from 'winston';
+import { SpyTransport } from "../test/spy-transport";
+import { LOG_NAME } from './constants';
 import { Monitor } from './monitor';
 
 describe('Monitor', () => {
+    let loggerSpy: jasmine.Spy;
+
     beforeEach(() => {
+        loggerSpy = jasmine.createSpy('logger');
         AWSMock.setSDKInstance(AWS);
+        winston.loggers.add(LOG_NAME, {
+            transports: [new SpyTransport({}, loggerSpy)]
+        });
     });
 
     afterEach(() => {
@@ -37,10 +46,11 @@ describe('Monitor', () => {
                 callback(null, stackNotFoundError);
             }
         });
-        let monitor = new Monitor();
+        const monitor = new Monitor();
 
         await monitor.monitor('blah');
         expect(describeStackEventsCallCount).toBe(2);
         expect(monitor.stackStatus).toBe('DELETE_COMPLETE');
+        expect(loggerSpy).toHaveBeenCalledTimes(2);
     });
 });
