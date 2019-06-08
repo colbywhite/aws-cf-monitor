@@ -1,8 +1,9 @@
 import AWS from 'aws-sdk';
 import * as AWSMock from 'aws-sdk-mock';
-import { DescribeStackEventsInput } from 'aws-sdk/clients/cloudformation';
 import * as winston from 'winston';
-import { SpyTransport } from "../test/spy-transport";
+import { DELETE_IN_PROGRESS_EVENT, STACK_NOT_FOUND_ERROR } from '../test/aws.events';
+import { returnStackEvents } from '../test/aws.mocks';
+import { SpyTransport } from '../test/spy-transport';
 import { LOG_NAME } from './constants';
 import { Monitor } from './monitor';
 
@@ -23,34 +24,11 @@ describe('Monitor', () => {
     });
 
     it('should keep monitoring until stack not found error', async () => {
-        const deleteStartEvent = {
-            StackEvents: [
-                {
-                    EventId: '1a2b3c4d',
-                    StackName: 'blah',
-                    LogicalResourceId: 'blah',
-                    ResourceType: 'AWS::CloudFormation::Stack',
-                    Timestamp: new Date(),
-                    ResourceStatus: 'DELETE_IN_PROGRESS'
-                },
-            ],
-        };
-        const stackNotFoundError = {
-            message: 'Stack new-service-dev does not exist'
-        };
-        let describeStackEventsCallCount = 0;
-        AWSMock.mock('CloudFormation', 'describeStackEvents', (input: DescribeStackEventsInput, callback: Function) => {
-            describeStackEventsCallCount += 1;
-            if (describeStackEventsCallCount <= 1) {
-                callback(null, deleteStartEvent);
-            } else {
-                callback(null, stackNotFoundError);
-            }
-        });
-        const monitor = new Monitor();
+        AWSMock.mock('CloudFormation', 'describeStackEvents', returnStackEvents([DELETE_IN_PROGRESS_EVENT, STACK_NOT_FOUND_ERROR]));
 
+        const monitor = new Monitor();
         await monitor.monitor('blah');
-        expect(describeStackEventsCallCount).toBe(2);
+
         expect(monitor.stackStatus).toBe('DELETE_COMPLETE');
         expect(loggerSpy).toHaveBeenCalledTimes(2);
     });
