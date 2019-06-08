@@ -19,7 +19,7 @@ export class Monitor {
     private readonly delayInMs: number;
     private readonly monitorStart: Date;
     private processedEvents: any[];
-    private _stackStatus: any;
+    private _stackStatus: string;
     private firstError: any;
 
     public constructor() {
@@ -27,11 +27,11 @@ export class Monitor {
         this.processedEvents = [];
         this.monitorStart = new Date();
         this.monitorStart.setSeconds(this.monitorStart.getSeconds() - this.delayInMs / 1000);
-        this._stackStatus = undefined;
+        this._stackStatus = '';
         this.firstError = undefined;
     }
 
-    public get stackStatus(): any {
+    public get stackStatus(): string {
         return this._stackStatus;
     }
 
@@ -40,11 +40,11 @@ export class Monitor {
     }
 
     public async monitor(stackName: string, cloudFormation: CloudFormation = new AWS.CloudFormation()) {
-        while (COMPLETE_STATUSES.indexOf(this._stackStatus) === -1) {
+        while (COMPLETE_STATUSES.indexOf(this.stackStatus) === -1) {
             await this.queryAndLogEvents(stackName, cloudFormation);
             await new Promise(resolve => setTimeout(resolve, this.delayInMs));
         }
-        Monitor.logger.info(`Stack finished with ${this._stackStatus}`);
+        Monitor.logger.info(`Stack finished with ${this.stackStatus}`);
     }
 
 
@@ -56,11 +56,10 @@ export class Monitor {
                     throw data;
                 }
                 data.StackEvents.reverse().forEach(this.processStackEvent.bind(this));
-                if (this.firstError || (this._stackStatus && this._stackStatus.endsWith('ROLLBACK_COMPLETE'))) {
+                if (this.firstError || (this.stackStatus && this.stackStatus.endsWith('ROLLBACK_COMPLETE'))) {
                     const errorMessage = `${this.firstError.LogicalResourceId} - ${this.firstError.ResourceStatusReason}`;
                     Monitor.logger.error(`Deployment failed! ${errorMessage}`);
-                    const err = {message: errorMessage, event: this.firstError};
-                    throw err;
+                    throw {message: errorMessage, event: this.firstError};
                 }
             }).catch((err: any) => {
                 if (err.message.endsWith('does not exist')) {
@@ -75,7 +74,7 @@ export class Monitor {
     private processStackEvent(stackEvent: StackEvent): void {
         const eventInRange = this.monitorStart < stackEvent.Timestamp;
         const eventNotLogged = this.processedEvents.indexOf(stackEvent.EventId) === -1;
-        const eventStatus = stackEvent.ResourceStatus || undefined;
+        const eventStatus = stackEvent.ResourceStatus || '';
         if (eventInRange && eventNotLogged) {
             // Since this is an event on the stack, keep track of stack status
             if (stackEvent.ResourceType === 'AWS::CloudFormation::Stack'
