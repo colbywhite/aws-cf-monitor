@@ -8,7 +8,10 @@
     {
       "name": "jasmine-spec-reporter#SpecReporter",
       "options": {
-        "displayStacktrace": "all"
+        "spec": {
+          "displayStacktrace": true,
+          "displayDuration": true
+        }
       }
     }
   ],

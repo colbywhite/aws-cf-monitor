@@ -1,19 +1,12 @@
 import { AWSError } from 'aws-sdk';
-import { DescribeStackEventsOutput } from 'aws-sdk/clients/cloudformation';
+import { DescribeStackEventsOutput, ResourceStatus } from 'aws-sdk/clients/cloudformation';
+import faker from 'faker';
 
-export const DELETE_IN_PROGRESS_EVENT: DescribeStackEventsOutput = {
-    StackEvents: [
-        {
-            StackId: 'StackId',
-            EventId: 'EventId',
-            StackName: 'StackName',
-            LogicalResourceId: 'LogicalResourceId',
-            ResourceType: 'AWS::CloudFormation::Stack',
-            Timestamp: new Date(),
-            ResourceStatus: 'DELETE_IN_PROGRESS'
-        }
-    ]
-};
+export const DELETE_IN_PROGRESS_EVENT: DescribeStackEventsOutput = buildStackEvent('DELETE_IN_PROGRESS');
+
+export const STACK_UPDATE_IN_PROGRESS: DescribeStackEventsOutput = buildStackEvent('UPDATE_IN_PROGRESS');
+
+export const STACK_UPDATE_COMPLETE: DescribeStackEventsOutput = buildStackEvent('UPDATE_COMPLETE');
 
 export const STACK_NOT_FOUND_ERROR: AWSError = {
     cfId: 'cfId',
@@ -30,3 +23,32 @@ export const STACK_NOT_FOUND_ERROR: AWSError = {
     time: new Date(),
     message: 'Stack new-service-dev does not exist'
 };
+
+export const BUCKET_EVENT: DescribeStackEventsOutput = {
+    StackEvents: [
+        {
+            StackId: 'StackId',
+            EventId: 'EventId',
+            StackName: 'StackName',
+            LogicalResourceId: 'BucketName',
+            ResourceType: 'AWS::S3::Bucket',
+            Timestamp: new Date()
+        },
+    ],
+};
+
+function buildStackEvent(status: ResourceStatus): DescribeStackEventsOutput {
+    return {
+        StackEvents: [
+            {
+                StackId: 'StackId',
+                EventId: faker.random.uuid(),
+                StackName: 'StackName',
+                LogicalResourceId: 'StackName',
+                ResourceType: 'AWS::CloudFormation::Stack',
+                Timestamp: new Date(),
+                ResourceStatus: status
+            },
+        ],
+    }
+}

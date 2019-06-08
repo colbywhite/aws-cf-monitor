@@ -22,11 +22,13 @@
     "winston": "3.2.1"
   },
   "devDependencies": {
+    "@types/faker": "4.1.5",
     "@types/jasmine": "3.3.13",
     "@types/node": "12.0.3",
     "@types/sinon": "7.0.12",
     "@types/winston": "2.4.4",
     "aws-sdk-mock": "4.4.0",
+    "faker": "4.1.0",
     "jasmine": "3.4.0",
     "jasmine-spec-reporter": "4.2.1",
     "jasmine-ts": "0.3.0",

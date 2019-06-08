@@ -40,6 +40,7 @@ export class Monitor {
     }
 
     public async monitor(stackName: string, cloudFormation: CloudFormation = new AWS.CloudFormation()) {
+        Monitor.logger.info(`Monitoring the stack ${stackName}`);
         while (COMPLETE_STATUSES.indexOf(this.stackStatus) === -1) {
             await this.queryAndLogEvents(stackName, cloudFormation);
             await new Promise(resolve => setTimeout(resolve, this.delayInMs));
