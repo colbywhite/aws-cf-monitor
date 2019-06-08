@@ -6,8 +6,8 @@ import CloudFormation, {
     StackEvent
 } from 'aws-sdk/clients/cloudformation';
 import chalk from 'chalk';
-import winston from 'winston';
-import { LOG_NAME } from './constants';
+import winston, { Logger } from 'winston';
+import { DEFAULT_DELAY, LOG_NAME } from './constants';
 
 const COMPLETE_STATUSES = [
     'CREATE_COMPLETE',
@@ -23,8 +23,7 @@ export class Monitor {
     private firstError: any;
 
     public constructor() {
-        // this.delayInMs = Number(process.env.AWS_CF_MONITOR_DELAY) || DEFAULT_DELAY;
-        this.delayInMs = 1;
+        this.delayInMs = Number(process.env.AWS_CF_MONITOR_DELAY) || DEFAULT_DELAY;
         this.processedEvents = [];
         this.monitorStart = new Date();
         this.monitorStart.setSeconds(this.monitorStart.getSeconds() - this.delayInMs / 1000);
@@ -36,7 +35,7 @@ export class Monitor {
         return this._stackStatus;
     }
 
-    private static get logger() {
+    private static get logger(): Logger {
         return winston.loggers.get(LOG_NAME);
     }
 

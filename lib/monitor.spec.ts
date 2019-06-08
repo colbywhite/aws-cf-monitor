@@ -10,6 +10,7 @@ describe('Monitor', () => {
     let loggerSpy: jasmine.Spy;
 
     beforeEach(() => {
+        process.env.AWS_CF_MONITOR_DELAY = '1';
         loggerSpy = jasmine.createSpy('logger');
         AWSMock.setSDKInstance(AWS);
         winston.loggers.add(LOG_NAME, {
