@@ -9,7 +9,7 @@ import chalk from 'chalk';
 import winston, { Logger } from 'winston';
 import { DEFAULT_DELAY, LOG_NAME } from './constants';
 
-const COMPLETE_STATUSES = [
+export const COMPLETE_STATUSES = [
     'CREATE_COMPLETE',
     'UPDATE_COMPLETE',
     'DELETE_COMPLETE',

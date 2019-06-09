@@ -1,9 +1,11 @@
 import AWS from 'aws-sdk';
 import * as AWSMock from 'aws-sdk-mock';
+import { DescribeStackEventsOutput } from "aws-sdk/clients/cloudformation";
 import * as winston from 'winston';
 import {
     BUCKET_EVENT,
     BUCKET_FAILED_EVENT,
+    buildStackEvent,
     STACK_DELETE_IN_PROGRESS_EVENT,
     STACK_NOT_FOUND_ERROR,
     STACK_ROLLBACK_FAILED_EVENT,
@@ -14,7 +16,7 @@ import {
 import { returnStackEvents } from '../test/aws.mocks';
 import { SpyTransport } from '../test/spy-transport';
 import { LOG_NAME } from './constants';
-import { Monitor } from './monitor';
+import { COMPLETE_STATUSES, Monitor } from './monitor';
 
 describe('Monitor', () => {
     let loggerSpy: jasmine.Spy;
@@ -67,5 +69,36 @@ describe('Monitor', () => {
             // the 1 ERROR for the final failure
             expect(loggerSpy).toHaveBeenCalledTimes(4);
         }
+    });
+
+    COMPLETE_STATUSES.forEach((status: string) => {
+        const action = status.split('_')[0];
+
+        it(`should keep monitoring until ${status} stack status`, async () => {
+            const inProgressEvent: DescribeStackEventsOutput = buildStackEvent(`${action}_IN_PROGRESS`);
+            const completedEvent: DescribeStackEventsOutput = buildStackEvent(status);
+            AWSMock.mock('CloudFormation', 'describeStackEvents', returnStackEvents([inProgressEvent, completedEvent]));
+
+            const monitor = new Monitor();
+            await monitor.monitor('blah');
+
+            expect(monitor.stackStatus).toEqual(status);
+            // 1 INFO at the beginning and the end, then 1 for each event
+            expect(loggerSpy).toHaveBeenCalledTimes(4);
+        });
+
+        it(`should not stop monitoring on ${status} nested stack status`, async () => {
+            const inProgressEvent: DescribeStackEventsOutput = buildStackEvent(`${action}_IN_PROGRESS`);
+            const nestedStackEvent: DescribeStackEventsOutput = buildStackEvent(status, 'nestedStack');
+            const completedEvent: DescribeStackEventsOutput = buildStackEvent(status);
+            AWSMock.mock('CloudFormation', 'describeStackEvents', returnStackEvents([inProgressEvent, nestedStackEvent, completedEvent]));
+
+            const monitor = new Monitor();
+            await monitor.monitor('blah');
+
+            expect(monitor.stackStatus).toEqual(status);
+            // 1 INFO at the beginning and the end, then 1 for each event
+            expect(loggerSpy).toHaveBeenCalledTimes(5);
+        });
     });
 });

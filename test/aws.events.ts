@@ -56,14 +56,14 @@ export const BUCKET_FAILED_EVENT: DescribeStackEventsOutput = {
     ],
 };
 
-function buildStackEvent(status: ResourceStatus): DescribeStackEventsOutput {
+export function buildStackEvent(status: ResourceStatus, resourceId?: string): DescribeStackEventsOutput {
     return {
         StackEvents: [
             {
                 StackId: 'StackId',
                 EventId: faker.random.uuid(),
                 StackName: 'StackName',
-                LogicalResourceId: 'StackName',
+                LogicalResourceId: (resourceId) ? resourceId : 'StackName',
                 ResourceType: 'AWS::CloudFormation::Stack',
                 Timestamp: new Date(),
                 ResourceStatus: status
