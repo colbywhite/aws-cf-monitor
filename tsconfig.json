@@ -4,6 +4,12 @@
     "module": "commonjs",
     "outDir": "dist",
     "strict": true,
-    "target": "es6"
-  }
+    "target": "es6",
+    "sourceMap": true,
+    "declaration": true
+  },
+  "exclude": [
+    "**/*.spec.ts",
+    "test"
+  ]
 }
