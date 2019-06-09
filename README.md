@@ -4,7 +4,7 @@
 [![npm](https://img.shields.io/npm/dt/aws-cf-monitor.svg)](https://www.npmjs.com/package/aws-cf-monitor)
 [![npm](https://img.shields.io/npm/l/aws-cf-monitor.svg)](https://www.npmjs.com/package/aws-cf-monitor)
 
-A wrapper around the AWS CloudFormation Node API that monitors the progress of the CF commands while providing smart logging.
+A wrapper around the AWS CloudFormation Node API that monitors the progress of CF commands while providing smart logging.
 
 The AWS API handles CloudFormation commands asynchronously, meaning you make a request to create a stack and you then write a bunch of boilerplate code to poll and wait for the creation to finish.
 
@@ -12,18 +12,26 @@ This aims to replace that boilerplate code with some pretty `winston` logging so
 
 # Usage
 
-```
-const AWSCFMonitor = require('aws-cf-monitor');
+```javascript
+import AWS from 'aws-sdk';
+import { LOG_NAME, Monitor } from 'aws-cf-monitor';
+import winston from 'winston';
 
-// use the same params that the AWS.CloudFormation object normally takes
-const params = {}
+const input = {StackName: 'blah', TemplateBody: 'template goes here'};
+const cf = new AWS.CloudFormation();
 
-# createOrUpdateStack, updateStack and deleteStack are also supported
-AWSCFMonitor.createStack(params)
-  .then(function(finalStatus) {
-    console.log(`Hooray, the stack is ${finalStatus}`);
-    console.log('And I didn\'t have to write a bunch of boilerplate to wait for it!');
-  });
+// simplest log configuration
+winston.loggers.add(LOG_NAME, {
+    format: winston.format.simple(),
+    transports: [new winston.transports.Console()]
+});
+
+cf.createStack(input).promise()
+    .then(() => new Monitor().monitor(name, cf))
+    .then((status) => {
+      console.log(`Hooray, the stack is ${status}`);
+      console.log('And I didn\'t have to write a bunch of boilerplate to wait for it!');
+    });
 ```
 
 ## Delay Interval
@@ -33,29 +41,9 @@ The default is _5000 milliseconds_.
 
 ## Configure logger
 You can configure the logger by whichever means you prefer to configure a `winston` logger.
-The name of the logger is `aws-cf-monitor`, which is a constant saved in `AWSCFMonitor.LOG_NAME`.
-If no logger is configured, a logger with the default `winston` configuration is used.
+The name of the logger is `aws-cf-monitor`, which is a constant saved in `LOG_NAME`.
 
 See the [winston](https://github.com/winstonjs/winston) project for more information.
-
-```
-// One example for configuring the logger
-const winston = require('winston');
-const AWSCFMonitor = require('aws-cf-monitor');
-
-winston.loggers.add(AWSCFMonitor.LOG_NAME, {
-  file: {
-    level: 'info',
-    filename: 'cf.log'
-  }
-});
-var logger = winston.loggers.get(AWSCFMonitor.LOG_NAME);
-logger.remove(winston.transports.Console);
-```
-
-# Tests
-
-`npm test`
 
 # Inspiration
 The way the `[serverless framework](https://github.com/serverless/serverless)` handles these CloudFormation requests is the inspiration.
