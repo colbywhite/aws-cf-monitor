@@ -10,14 +10,20 @@ The AWS API handles CloudFormation commands asynchronously, meaning you make a r
 
 This aims to replace that boilerplate code with some pretty `winston` logging so you can watch the events as they come.
 
+# Installation
+```bash
+npm i -S aws-cf-monitor
+npm i -S chalk winston aws-sdk  # install peer deps
+```
+
 # Usage
 
 ```javascript
-import AWS from 'aws-sdk';
-import { LOG_NAME, Monitor } from 'aws-cf-monitor';
-import winston from 'winston';
+const AWS = require('aws-sdk');
+const {LOG_NAME, Monitor} = require('aws-cf-monitor');
+const winston = require('winston');
 
-const input = {StackName: 'blah', TemplateBody: 'template goes here'};
+const input = {StackName: name, TemplateBody: template};
 const cf = new AWS.CloudFormation();
 
 // simplest log configuration
