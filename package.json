@@ -7,6 +7,7 @@
   "scripts": {
     "build": "rm -rf dist && tsc --pretty",
     "lint": "tslint 'src/**/*.ts'",
+    "prepublishOnly": "[ -d dist ]",
     "test": "jasmine-ts --config=./jasmine.json",
     "test:int": "ts-node test/int-test.ts",
     "test:watch": "nodemon --ext ts --exec 'jasmine-ts --config=./jasmine.json'"
