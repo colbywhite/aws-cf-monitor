@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk';
 import * as AWSMock from 'aws-sdk-mock';
-import { DescribeStackEventsOutput } from "aws-sdk/clients/cloudformation";
+import { DescribeStackEventsOutput } from 'aws-sdk/clients/cloudformation';
 import * as winston from 'winston';
 import {
     BUCKET_EVENT,
