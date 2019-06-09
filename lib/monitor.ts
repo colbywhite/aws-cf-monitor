@@ -19,7 +19,7 @@ export class Monitor {
     private readonly delayInMs: number;
     private readonly monitorStart: Date;
     private processedEvents: any[];
-    private _stackStatus: string;
+    private _stackStatus: ResourceStatus;
     private firstError: any;
 
     public constructor() {
@@ -31,7 +31,7 @@ export class Monitor {
         this.firstError = undefined;
     }
 
-    public get stackStatus(): string {
+    public get stackStatus(): ResourceStatus {
         return this._stackStatus;
     }
 
@@ -39,13 +39,14 @@ export class Monitor {
         return winston.loggers.get(LOG_NAME);
     }
 
-    public async monitor(stackName: string, cloudFormation: CloudFormation = new AWS.CloudFormation()) {
+    public async monitor(stackName: string, cloudFormation: CloudFormation = new AWS.CloudFormation()): Promise<ResourceStatus> {
         Monitor.logger.info(`Monitoring the stack ${stackName}`);
         while (COMPLETE_STATUSES.indexOf(this.stackStatus) === -1) {
             await this.queryAndLogEvents(stackName, cloudFormation);
             await new Promise(resolve => setTimeout(resolve, this.delayInMs));
         }
         Monitor.logger.info(`Stack finished with ${this.stackStatus}`);
+        return this.stackStatus;
     }
 
 

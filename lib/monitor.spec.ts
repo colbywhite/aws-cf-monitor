@@ -39,9 +39,9 @@ describe('Monitor', () => {
         AWSMock.mock('CloudFormation', 'describeStackEvents', returnStackEvents([STACK_DELETE_IN_PROGRESS_EVENT, STACK_NOT_FOUND_ERROR]));
 
         const monitor = new Monitor();
-        await monitor.monitor('blah');
+        const status = await monitor.monitor('blah');
 
-        expect(monitor.stackStatus).toBe('DELETE_COMPLETE');
+        expect(status).toBe('DELETE_COMPLETE');
         // 1 INFO at the beginning, then 1 for each real event
         expect(loggerSpy).toHaveBeenCalledTimes(3);
     });
@@ -80,9 +80,9 @@ describe('Monitor', () => {
             AWSMock.mock('CloudFormation', 'describeStackEvents', returnStackEvents([inProgressEvent, completedEvent]));
 
             const monitor = new Monitor();
-            await monitor.monitor('blah');
+            const returnedStatus = await monitor.monitor('blah');
 
-            expect(monitor.stackStatus).toEqual(status);
+            expect(returnedStatus).toEqual(status);
             // 1 INFO at the beginning and the end, then 1 for each event
             expect(loggerSpy).toHaveBeenCalledTimes(4);
         });
@@ -94,9 +94,9 @@ describe('Monitor', () => {
             AWSMock.mock('CloudFormation', 'describeStackEvents', returnStackEvents([inProgressEvent, nestedStackEvent, completedEvent]));
 
             const monitor = new Monitor();
-            await monitor.monitor('blah');
+            const returnedStatus = await monitor.monitor('blah');
 
-            expect(monitor.stackStatus).toEqual(status);
+            expect(returnedStatus).toEqual(status);
             // 1 INFO at the beginning and the end, then 1 for each event
             expect(loggerSpy).toHaveBeenCalledTimes(5);
         });

@@ -1,4 +1,2 @@
-export * from './lib/constants';
-
-export class AwsCfMonitor {
-}
+export { LOG_NAME } from './lib/constants';
+export { Monitor } from './lib/monitor';
