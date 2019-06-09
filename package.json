@@ -1,6 +1,6 @@
 {
   "name": "aws-cf-monitor",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "A wrapper around the AWS CloudFormation Node API that monitors the progress of the CF commands while providing smart logging",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,17 +19,19 @@
   "author": "Colby M. White",
   "license": "ISC",
   "repository": "colbywhite/aws-cf-monitor",
-  "dependencies": {
-    "aws-sdk": "2.464.0",
-    "chalk": "2.4.2",
-    "winston": "3.2.1"
+  "peerDependencies": {
+    "aws-sdk": "^2.464.0",
+    "chalk": "^2.4.2",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "@types/faker": "4.1.5",
     "@types/jasmine": "3.3.13",
     "@types/node": "12.0.7",
     "@types/winston": "2.4.4",
+    "aws-sdk": "^2.464.0",
     "aws-sdk-mock": "4.4.0",
+    "chalk": "^2.4.2",
     "faker": "4.1.0",
     "jasmine": "3.4.0",
     "jasmine-spec-reporter": "4.2.1",
@@ -37,6 +39,7 @@
     "nodemon": "1.19.1",
     "ts-node": "8.2.0",
     "tslint": "5.17.0",
-    "typescript": "3.5.1"
+    "typescript": "3.5.1",
+    "winston": "^3.2.1"
   }
 }
