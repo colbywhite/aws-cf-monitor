@@ -3,8 +3,11 @@ import * as AWSMock from 'aws-sdk-mock';
 import * as winston from 'winston';
 import {
     BUCKET_EVENT,
-    DELETE_IN_PROGRESS_EVENT,
+    BUCKET_FAILED_EVENT,
+    STACK_DELETE_IN_PROGRESS_EVENT,
     STACK_NOT_FOUND_ERROR,
+    STACK_ROLLBACK_FAILED_EVENT,
+    STACK_ROLLBACK_IN_PROGRESS_EVENT,
     STACK_UPDATE_COMPLETE,
     STACK_UPDATE_IN_PROGRESS
 } from '../test/aws.events';
@@ -31,7 +34,7 @@ describe('Monitor', () => {
     });
 
     it('should keep monitoring until stack not found error', async () => {
-        AWSMock.mock('CloudFormation', 'describeStackEvents', returnStackEvents([DELETE_IN_PROGRESS_EVENT, STACK_NOT_FOUND_ERROR]));
+        AWSMock.mock('CloudFormation', 'describeStackEvents', returnStackEvents([STACK_DELETE_IN_PROGRESS_EVENT, STACK_NOT_FOUND_ERROR]));
 
         const monitor = new Monitor();
         await monitor.monitor('blah');
@@ -50,5 +53,19 @@ describe('Monitor', () => {
         expect(monitor.stackStatus).toEqual('UPDATE_COMPLETE');
         // 1 INFO at the beginning and the end, then 1 for each real event
         expect(loggerSpy).toHaveBeenCalledTimes(5);
+    });
+
+    it('should throw an error and exit immediately if stack status *_FAILED', async () => {
+        AWSMock.mock('CloudFormation', 'describeStackEvents', returnStackEvents([STACK_UPDATE_IN_PROGRESS, BUCKET_FAILED_EVENT, STACK_ROLLBACK_IN_PROGRESS_EVENT, STACK_ROLLBACK_FAILED_EVENT]));
+
+        const monitor = new Monitor();
+        try {
+            await monitor.monitor('blah');
+            fail('Monitor should have thrown an error');
+        } catch (err) {
+            // 1 INFO at the beginning then 1 for each event until the failure
+            // the 1 ERROR for the final failure
+            expect(loggerSpy).toHaveBeenCalledTimes(4);
+        }
     });
 });
